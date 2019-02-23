@@ -13,7 +13,7 @@ screen_top = HP_NUM_COORDS["screen"]["top"]
 screen_left = HP_NUM_COORDS["screen"]["left"]
 screen_bottom = HP_NUM_COORDS["screen"]["bottom"]
 screen_right = HP_NUM_COORDS["screen"]["right"]
-
+# torch.Size([6, 3, 14, 25])
 # Setup video capture
 cap = cv2.VideoCapture(0)
 
@@ -38,7 +38,6 @@ while True:
     frame = frame[screen_top:screen_bottom, screen_left:screen_right]
     # print(frame.shape)
     cv2.imshow("Game", frame)
-    get_health(frame)
 
     # FPS Counter 
     fps.append(1/(time.time() - curr_time))
@@ -59,6 +58,7 @@ while True:
 
     # Preprocess the frame
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    get_health(frame)
     frame = cv2.resize(frame, dsize=(INPUT_X, INPUT_Y))
     # print(frame.shape)
     cv2.imshow("Input", frame)

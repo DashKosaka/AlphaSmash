@@ -41,9 +41,9 @@ def get_health(frame):
 
     digit_3  = frame[top_coord: bottom_coord, right_coord - HP_BOX_WIDTH : right_coord]
     
-    cv2.imshow("digit_1", digit_1)
-    cv2.imshow("digit_2", digit_2)
-    cv2.imshow("digit_3", digit_3)
+    # cv2.imshow("digit_1", digit_1)
+    # cv2.imshow("digit_2", digit_2)
+    # cv2.imshow("digit_3", digit_3)
 
     all_digits.append(digit_1)
     all_digits.append(digit_2)
@@ -62,8 +62,8 @@ def get_health(frame):
     all_digits.append(enemy_digit_2)
     all_digits.append(enemy_digit_3)
 
-    cv2.imshow("enemy_digit_1", enemy_digit_1)
-    cv2.imshow("enemy_digit_2", enemy_digit_2)
+    # cv2.imshow("enemy_digit_1", enemy_digit_1)
+    # cv2.imshow("enemy_digit_2", enemy_digit_2)
     cv2.imshow("enemy_digit_3", enemy_digit_3)
     '''
     # COLLECT IMAGES FOR TRAINING
@@ -99,18 +99,28 @@ def get_health(frame):
         elif key == ord('d'):
             break
     '''
-    cv2.imwrite("./testing.jpeg", enemy_digit_3)
-    testing = cv2.imread("./testing.jpeg")
-    testing = cv2.resize(testing, (14, 25))
-    testing = torch.Tensor(testing)
-    testing = testing.view(1, 3, testing.size(0), testing.size(1))
-    print(ocr_model(testing))
+    # cv2.imwrite("./testing.png", enemy_digit_3, {"CV_IMWRITE_PNG_COMPRESSION": 0})
+    # testing = cv2.imread("./testing.png")
+    # print(np.sum(testing) - np.sum(enemy_digit_3))
+    # testing = cv2.resize(testing, (14, 25))
+    # cv2.imshow("what", testing)
+    # testing = torch.Tensor(testing)
+    # testing = testing.view(1, 3, testing.size(0), testing.size(1)) / 255
+#    print(ocr_model(testing))
+#    print(ocr_model(testing))
+#    print(testing)
 
-    digit_tensors = torchify_tensors(all_digits).view(-1, 3, INPUT_DIMENSIONS[0], INPUT_DIMENSIONS[1])
+    digit_tensors = torchify_tensors(all_digits).view(-1, 1, INPUT_DIMENSIONS[0], INPUT_DIMENSIONS[1])
+    digit_tensors[digit_tensors < 255//2] = 0
+    digit_tensors[digit_tensors >= 255//2] = 1
     # print(digit_tensors.size())
     ret = ocr_model(digit_tensors)
-    print(ret)
-    # print(ret.max(1)[1])
+    # enemy_digit_3.shape
+    # enemy_digit_3 = cv2.resize(enemy_digit_3, INPUT_DIMENSIONS) / 255
+#    print(ocr_model(torch.Tensor(enemy_digit_3).view(1, 3, *INPUT_DIMENSIONS)))
+#    print(torch.Tensor(enemy_digit_3).view(1, 3, *INPUT_DIMENSIONS))
+#    print(torch.sum(testing) - torch.sum(torch.Tensor(enemy_digit_3).view(1, 3, *INPUT_DIMENSIONS)))
+    print(ret.max(1)[1])
     while(True):
         key = cv2.waitKey(100) & 0xFF
         if key == ord('d'):
