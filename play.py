@@ -36,6 +36,8 @@ while True:
     # Show the frame real-time
     rval, frame = cap.read()
     frame = frame[screen_top:screen_bottom, screen_left:screen_right]
+    # print(frame.shape)
+    get_health(frame)
     cv2.imshow("Game", frame)
 
     # FPS Counter 
@@ -63,7 +65,6 @@ while True:
     history[:4] = history[-4:]
     history[-1] = frame
 
-    print(get_health(frame))
     
     # Get action
     action = agent.get_action(history[:4])

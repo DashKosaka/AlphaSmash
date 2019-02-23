@@ -12,7 +12,7 @@ def get_data(directory):
             for image in os.listdir(os.path.join(directory, label)):
                 try:
                     x = cv2.imread(os.path.join(directory, label, image)) # Images full path
-                    x = cv2.resize(x, (50,50))
+                    x = cv2.resize(x, (25, 14))
                     x = cv2.cvtColor(x, cv2.COLOR_BGR2GRAY)
                     data.append(x)
                     labels.append(int(label))
@@ -33,7 +33,7 @@ class CNN(nn.Module):
             nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(2))
-        self.fc = nn.Linear(4608, 11)
+        self.fc = nn.Linear(576, 11)
         
     def forward(self, x):
         out = self.layer1(x)
@@ -43,8 +43,8 @@ class CNN(nn.Module):
         return out
 
 if __name__ == '__main__':
-    num_epochs = 200
-    batch_size = 300
+    num_epochs = 1000
+    batch_size = 500
     learning_rate = 0.001
     device = torch.device('cuda:0')
 

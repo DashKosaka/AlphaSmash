@@ -3,6 +3,7 @@ import torch
 import torchvision.transforms as transforms
 import cv2
 import json
+import random
 
 with open('cropping.json') as f:
     HP_NUM_COORDS = json.load(f)
@@ -12,14 +13,6 @@ ocr_model.load_state_dict(torch.load("./ocr/alphasmash_ocr.pth"))
 
 INPUT_DIMENSIONS = (50, 50)
 HP_BOX_WIDTH = 15
-
-def torchify_image(img_path):
-    img = cv2.imread(img_path)
-    img = cv2.resize(img, INPUT_DIMENSIONS)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img = torch.Tensor(img)
-    img = img.view(1, 1, img.size(0), img.size(1))
-    return(img)
 
 def torchify_tensors(tensors):
     for idx in range(len(tensors)):
@@ -46,6 +39,10 @@ def get_health(frame):
 
     digit_3  = frame[top_coord: bottom_coord, right_coord - HP_BOX_WIDTH : right_coord]
     
+    cv2.imshow("digit_1", digit_1)
+    cv2.imshow("digit_2", digit_2)
+    cv2.imshow("digit_3", digit_3)
+
     all_digits.append(digit_1)
     all_digits.append(digit_2)
     all_digits.append(digit_3)
@@ -63,7 +60,25 @@ def get_health(frame):
     all_digits.append(enemy_digit_2)
     all_digits.append(enemy_digit_3)
 
-    digit_tensors = torchify_tensors(all_digits).unsqueeze(1)
-    ret = ocr_model(digit_tensors).max(1)[1]
+    cv2.imshow("enemy_digit_1", enemy_digit_1)
+    cv2.imshow("enemy_digit_2", enemy_digit_2)
+    cv2.imshow("enemy_digit_3", enemy_digit_3)
+
+    while(True):
+        key = cv2.waitKey(100) & 0xFF
+
+        if key == ord('f'):
+            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", digit_1)
+            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", digit_2)
+            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", digit_3)
+            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", enemy_digit_1)
+            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", enemy_digit_2)
+            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", enemy_digit_3)
+
+        elif key == ord('d'):
+            break
+
+    digit_tensors = torchify_tensors(all_digits).view(-1, 3, INPUT_DIMENSIONS[0], INPUT_DIMENSIONS[1])
+    # ret = ocr_model(digit_tensors).max(1)[1]
     # print(ret)
-    return ret
+    # return ret

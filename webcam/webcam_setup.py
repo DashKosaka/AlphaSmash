@@ -97,7 +97,7 @@ while(True):
     # Display the captured screen
     cv2.imshow('Game Screen', screen)
 
-    cv2.imshow('Number', health[h2_up:h2_down, h2_side:h2_side+15])
+    cv2.imshow('Number', health[h1_up:h1_down, h2_side:h2_side+15])
     
     key = cv2.waitKey(100) & 0xFF
     if key == 27: # Escape to quit

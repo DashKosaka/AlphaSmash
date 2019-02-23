@@ -8,9 +8,9 @@
 
 	"hp": {
 		"top": 225,
-		"left": 66,
+		"left": 69,
 		"bottom": 250,
-		"right": 106
+		"right": 109
 	},
 
 	"enemy_hp": {
