@@ -20,19 +20,20 @@ def torchify_image(img_path):
     img = img.view(1, 1, img.size(0), img.size(1))
     return(img)
 
-def torchify_tensor(tensor):
-    img = cv2.resize(img, INPUT_DIMENSIONS)
-    img = torch.Tensor(img)
-    img = img.view(1, 1, img.size(0), img.size(1))
-    return(img)
+def torchify_tensor(tensors):
+	for tensor in tensors:
+	    img = cv2.resize(tensor, INPUT_DIMENSIONS)
+	    img = torch.Tensor(img)
+	    img = img.view(1, 1, img.size(0), img.size(1))
+    return(tensors)
 
 def get_health(frame):
 	parent_health = HP_NUM_COORDS["hp"]
-	top_coord, bottom_coord, right_coord, left_coord = 
+	top_coord, bottom_coord, right_coord, left_coord = \
 		parent_health["top"], parent_health["bottom"], parent_health["right"], parent_health["left"]
 
 	enemy_health = HP_NUM_COORDS["enemy_hp"]
-	enemy_top, enemy_bottom, enemy_right, enemy_left = 
+	enemy_top, enemy_bottom, enemy_right, enemy_left = \
 		enemy_health["top"], enemy_health["bottom"], enemy_health["right"], enemy_health["left"]
 
 	all_digits = []
