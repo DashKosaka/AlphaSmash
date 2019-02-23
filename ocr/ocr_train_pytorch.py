@@ -12,8 +12,8 @@ def get_data(directory):
             for image in os.listdir(os.path.join(directory, label)):
                 try:
                     x = cv2.imread(os.path.join(directory, label, image)) # Images full path
-                    x = cv2.resize(x, (25, 14))
-                    x = cv2.cvtColor(x, cv2.COLOR_BGR2GRAY)
+                    x = cv2.resize(x, (14, 25))
+                    # x = cv2.cvtColor(x, cv2.COLOR_BGR2GRAY)
                     data.append(x)
                     labels.append(int(label))
                 except:
@@ -24,27 +24,32 @@ class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=5, padding=2),
+            nn.Conv2d(3, 16, kernel_size=5, padding=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.MaxPool2d(2))
+            nn.MaxPool2d(5))
         self.layer2 = nn.Sequential(
-            nn.Conv2d(16, 32, kernel_size=5, padding=2),
+            nn.Conv2d(16, 32, kernel_size=3, padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.MaxPool2d(2))
-        self.fc = nn.Linear(576, 11)
+            nn.MaxPool2d(3))
+        self.layer3 = nn.Sequential(
+            nn.Linear(32, 11),
+            # nn.BatchNorm1d(256),
+            # nn.ReLU()
+            )
+        # self.out = nn.Linear(256, 11)
         
     def forward(self, x):
         out = self.layer1(x)
         out = self.layer2(out)
         out = out.view(out.size(0), -1)
-        out = self.fc(out)
+        out = self.layer3(out)
         return out
 
 if __name__ == '__main__':
-    num_epochs = 1000
-    batch_size = 500
+    num_epochs = 500
+    batch_size = 32
     learning_rate = 0.001
     device = torch.device('cuda:0')
 
@@ -56,7 +61,8 @@ if __name__ == '__main__':
 
     train_dataset, train_labels = get_data("./numbers")
     train_dataset, train_labels = torch.Tensor(train_dataset).to(device), torch.Tensor(train_labels).long().to(device)
-    train_dataset = train_dataset.view(train_dataset.size(0), 1, train_dataset.size(1), train_dataset.size(2))
+    print(train_dataset.size())
+    train_dataset = train_dataset.view(train_dataset.size(0), 3, train_dataset.size(1), train_dataset.size(2))
 
     dat_dim = train_dataset.size()
     batches = math.ceil(dat_dim[0]/float(batch_size))
@@ -72,6 +78,8 @@ if __name__ == '__main__':
 
             # Forward + Backward + Optimize
             optimizer.zero_grad()
+            # print(images.size())
+            print(image.size())
             outputs = cnn(images)
             loss = criterion(outputs, labels)
             total_loss.append(loss)

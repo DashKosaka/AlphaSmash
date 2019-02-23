@@ -37,8 +37,8 @@ while True:
     rval, frame = cap.read()
     frame = frame[screen_top:screen_bottom, screen_left:screen_right]
     # print(frame.shape)
-    get_health(frame)
     cv2.imshow("Game", frame)
+    get_health(frame)
 
     # FPS Counter 
     fps.append(1/(time.time() - curr_time))

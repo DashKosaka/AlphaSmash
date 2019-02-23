@@ -4,14 +4,16 @@ import torchvision.transforms as transforms
 import cv2
 import json
 import random
+import numpy as np
 
 with open('cropping.json') as f:
     HP_NUM_COORDS = json.load(f)
 
 ocr_model = CNN()
 ocr_model.load_state_dict(torch.load("./ocr/alphasmash_ocr.pth"))
+DIGIT = np.zeros(1, dtype=np.uint8)
 
-INPUT_DIMENSIONS = (50, 50)
+INPUT_DIMENSIONS = (25, 14)
 HP_BOX_WIDTH = 15
 
 def torchify_tensors(tensors):
@@ -63,22 +65,55 @@ def get_health(frame):
     cv2.imshow("enemy_digit_1", enemy_digit_1)
     cv2.imshow("enemy_digit_2", enemy_digit_2)
     cv2.imshow("enemy_digit_3", enemy_digit_3)
-
+    '''
+    # COLLECT IMAGES FOR TRAINING
     while(True):
         key = cv2.waitKey(100) & 0xFF
 
-        if key == ord('f'):
-            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", digit_1)
-            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", digit_2)
-            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", digit_3)
-            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", enemy_digit_1)
-            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", enemy_digit_2)
-            cv2.imwrite("./images/img" + str(random.randint(1,1000000)) + ".jpeg", enemy_digit_3)
+        fp = "./ocr/numbers/" + str(DIGIT[0]) + "/img" + str(random.randint(1,1000000)) + ".jpeg"
 
+        if key == ord('1'):
+            cv2.imwrite(fp, digit_1)
+            print(fp)
+        elif key == ord('2'):    
+            cv2.imwrite(fp, digit_2)
+            print(fp)
+        elif key == ord('3'):
+            cv2.imwrite(fp, digit_3)
+            print(fp)
+        elif key == ord('4'):    
+            cv2.imwrite(fp, enemy_digit_1)
+            print(fp)
+        elif key == ord('5'):    
+            cv2.imwrite(fp, enemy_digit_2)
+            print(fp)
+        elif key == ord('6'):    
+            cv2.imwrite(fp, enemy_digit_3)
+            print(fp)
+        elif key == ord('w'):
+            DIGIT[0] = (DIGIT[0] + 1) % 11
+            print(DIGIT[0])
+        elif key == ord('s'):
+            DIGIT[0] = (DIGIT[0] - 1) % 11
+            print(DIGIT[0])
         elif key == ord('d'):
             break
+    '''
+    cv2.imwrite("./testing.jpeg", enemy_digit_3)
+    testing = cv2.imread("./testing.jpeg")
+    testing = cv2.resize(testing, (14, 25))
+    testing = torch.Tensor(testing)
+    testing = testing.view(1, 3, testing.size(0), testing.size(1))
+    print(ocr_model(testing))
 
     digit_tensors = torchify_tensors(all_digits).view(-1, 3, INPUT_DIMENSIONS[0], INPUT_DIMENSIONS[1])
-    # ret = ocr_model(digit_tensors).max(1)[1]
-    # print(ret)
-    # return ret
+    # print(digit_tensors.size())
+    ret = ocr_model(digit_tensors)
+    print(ret)
+    # print(ret.max(1)[1])
+    while(True):
+        key = cv2.waitKey(100) & 0xFF
+        if key == ord('d'):
+            break
+
+    return ret.max(1)[1]
