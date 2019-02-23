@@ -1,0 +1,31 @@
+
+
+# Network Questions #
+How do we make a near equivalent of AlphaStar without the same time and computational power required?
+
+How do we send in network outputs as inputs to the switch?
+
+What do the outputs of the network look like?
+
+What does the architecture look like?
+
+
+# Game Questions #
+What map should we use?
+- Hyrule 
+
+Mode and settings?
+- Training
+- Fixed camera
+- 
+
+Characters?
+-
+
+What will the complete setup look like?
+
+# Presentation Questions #
+How do we use our 5 minutes?
+
+
+
