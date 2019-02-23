@@ -1,6 +1,7 @@
 import torch 
 import torch.nn as nn
 from torch.utils.data import DataLoader
+from torch.autograd import Variable
 import os
 import numpy as np
 import cv2
@@ -50,7 +51,7 @@ class CNN(nn.Module):
         return out
 
 if __name__ == '__main__':
-    num_epochs = 100
+    num_epochs = 50
     batch_size = 64
     learning_rate = 0.001
     # device = torch.device('cuda:0')
@@ -62,25 +63,19 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
-    train_dataset = get_data("./numbers")
-    # print(train_dataset)
-    # train_dataset = torch.Tensor(train_dataset).to(device)
-    # print(train_dataset.size())
-    # train_dataset = train_dataset.view(train_dataset.size(0), 3, train_dataset.size(1), train_dataset.size(2))
-    #Check if gpu support is available
-    cuda_avail = torch.cuda.is_available()
-
-    if cuda_avail:
-        model.cuda()
+    full_dataset = get_data("./numbers")
+    train_size = int(0.8 * len(full_dataset))
+    test_size = len(full_dataset) - train_size
+    train_dataset, test_dataset = torch.utils.data.random_split(full_dataset, [train_size, test_size])
 
     for epoch in range(num_epochs):
         total_loss = []
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=8)
         for i, (images, labels) in enumerate(train_loader):
             #Move images and labels to gpu if available
-            if cuda_avail:
-                images = Variable(images.cuda())
-                labels = Variable(labels.cuda())
+            # if cuda_avail:
+            #     images = Variable(images.cuda())
+            #     labels = Variable(labels.cuda())
 
             #Clear all accumulated gradients
             optimizer.zero_grad()
@@ -95,6 +90,17 @@ if __name__ == '__main__':
             optimizer.step()
 
             total_loss.append(loss)
+
         print("Average loss (epoch: " + str(epoch) + ")= " + str(sum(total_loss)/len(total_loss)))
+        #Accuracy
+        outputs = outputs.max(1)[1]
+        correct = (outputs == labels).float().sum()
+        print("Accuracy: {:.3f}".format(correct/outputs.shape[0]))
 
     torch.save(model.state_dict(), "./alphasmash_ocr.pth")
+
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=8)
+    for i, (images, labels) in enumerate(test_loader):
+        outputs = model(images).max(1)[1]
+        correct = (outputs == labels).float().sum()
+        print("Accuracy: {:.3f}".format(correct/outputs.shape[0]))
