@@ -71,8 +71,9 @@ class Agent():
             action = random.choice(list(range(self.action_size)))
         else:
             # Exploitation
+            # print(torch.Tensor(state).unsqueeze(0).size())
             with torch.no_grad():
-                action = int(self.policy_net.forward(torch.Tensor(state).unsqueeze(0).to(device)).max(1)[1])
+                action = int(self.policy_net(torch.Tensor(state).unsqueeze(0).to(device)).max(1)[1])
         return action
 
     def train_policy_net(self, frame):

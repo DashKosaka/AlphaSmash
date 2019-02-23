@@ -18,9 +18,37 @@ PIN_SHIELD
 
 class Player(ArduinoDriver):
 
-    def __init__(self, port):
+    def __init__(self, port='COM4'):
         super(Player, self).__init__(port)
-        self.is_idle = False
+        self.action_map =  [self.idle,
+                            self.shield,
+                            self.grab,
+                            self.attack,
+                            self.special,
+                            self.move_up,
+                            self.move_left,
+                            self.move_down,
+                            self.move_right,
+                            self.tilt_up,
+                            self.tilt_left,
+                            self.tilt_down,
+                            self.tilt_right,
+                            self.up_left,
+                            self.up_right,
+                            self.dodge_left,
+                            self.dodge_right,
+                            self.dodge_down,
+                            self.left_smash,
+                            self.right_smash,
+                            self.down_smash,
+                            self.up_smash,
+                            self.left_special,
+                            self.right_special,
+                            self.down_special,
+                            self.up_special]
+
+    def do(self, action):
+        self.action_map[action]()
 
     '''
     *** Do Nothing

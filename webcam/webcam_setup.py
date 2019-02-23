@@ -55,22 +55,25 @@ def draw_health_border(screen, x_tuple, y_tuple):
     draw_vline(screen, x2, (y1, y2))
     
 
-frame_up = 40
-frame_down = 350
-frame_left = 50
-frame_right = 590
+frame_up = 65
+frame_down = 333
+frame_left = 92
+frame_right = 572
 
-h1_left = 87
-h1_right = 137
-h1_up = 250
-h1_down = 275
+h1_side = 65
+h1_up = 225
+h1_down = 250
 
-h2_left = 200
-h2_right = 250
-h2_up = 250
-h2_down = 275
+h2_side = 170
+h2_up = 225
+h2_down = 250
 
 while(True):
+    h1_left = h1_side
+    h1_right = h1_side + 40
+    h2_left = h2_side
+    h2_right = h2_side + 40
+
     # Capture frame-by-frame
     ret, frame = cap.read()
     original = np.copy(frame)
@@ -83,6 +86,7 @@ while(True):
 
     # Crop out the screen    
     screen = original[frame_up:frame_down, frame_left:frame_right]
+    health = np.copy(screen)
     
     # Own health borders
     draw_health_border(screen, (h1_left, h1_right), (h1_up, h1_down))
@@ -92,6 +96,8 @@ while(True):
     
     # Display the captured screen
     cv2.imshow('Game Screen', screen)
+
+    cv2.imshow('Number', health[h2_up:h2_down, h2_side:h2_side+15])
     
     key = cv2.waitKey(100) & 0xFF
     if key == 27: # Escape to quit
@@ -116,8 +122,32 @@ while(True):
         frame_right += -1
     elif key == ord('f'):
         frame_right += 1
+
+    elif key == ord('u'):
+        h1_side += -1
+    elif key == ord('i'):
+        h1_side += 1
+    elif key == ord('j'):
+        h2_side += -1
+    elif key == ord('k'):
+        h2_side += 1
+    
         
 print('Final Values')
+print(frame_up)
+print(frame_down)
+print(frame_left)
+print(frame_right)
+
+print(h1_left)
+print(h1_right)
+print(h1_up)
+print(h1_down)
+
+print(h2_left)
+print(h2_right)
+print(h2_up)
+print(h2_down)
 
 # When everything done, release the capture
 cap.release()

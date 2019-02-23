@@ -1,7 +1,11 @@
+import json
 DEVICE = 'cuda:0' # 'cpu'
-DEVICE = 'cpu'
+# DEVICE = 'cpu'
 MODEL_PATH = ''
 STATE_DQN_PATH = './state_dqn.pth'
+
+with open('cropping.json') as f:
+    HP_NUM_COORDS = json.load(f)
 
 '''
 *** training parameters
@@ -26,7 +30,7 @@ ACTION_WAIT = 0.25
 '''
 *** environment parameters
 '''
-ACTION_SIZE = 14
+ACTION_SIZE = 26
 SCREEN_X = 540
 SCREEN_Y = 300
 INPUT_X = 540

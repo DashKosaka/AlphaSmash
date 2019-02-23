@@ -36,7 +36,7 @@ class DDQN(nn.Module):
 
         self.state = StateNet(input_size)
         self.action = ActionNet(input_size)
-        self.qnet = QNet()
+        # self.qnet = QNet()
         
     def forward(self, x):
         conv_out = self.conv(x)
@@ -47,6 +47,8 @@ class DDQN(nn.Module):
         state_q = state_q.expand(state_q.size(0), self.action_size)
         action_q = self.action(conv_out)
         
+        # print(state_q.size())
+        # print(action_q.size())
         q_values = state_q + (action_q - action_q.mean(1).unsqueeze(1).expand(-1, self.action_size))
 
         return q_values
@@ -100,7 +102,7 @@ class StateNet(nn.Module):
         return self.model(x)
     
 class ActionNet(nn.Module):
-    def __init__(self, input_size, output_size=10):
+    def __init__(self, input_size, output_size=ACTION_SIZE):
         super(ActionNet, self).__init__()
         self.model = nn.Sequential(
                 nn.Linear(input_size, 512),
@@ -109,7 +111,8 @@ class ActionNet(nn.Module):
         
     def forward(self, x):
         return self.model(x)
-    
+
+'''    
 class QNet(nn.Module):
     def __init__(self, input_size=1+10, output_size=10):
         super(QNet, self).__init__()
@@ -118,6 +121,6 @@ class QNet(nn.Module):
         
     def forward(self, x):
         return self.model(x)
-    
+'''
     
     

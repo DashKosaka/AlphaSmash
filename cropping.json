@@ -1,0 +1,22 @@
+{
+	"screen": {
+		"top": 65,
+		"left": 92,
+		"bottom": 333,
+		"right": 572
+	},
+
+	"hp": {
+		"top": 225,
+		"left": 66,
+		"bottom": 250,
+		"right": 106
+	},
+
+	"enemy_hp": {
+		"top": 225,
+		"left": 170,
+		"bottom": 250,
+		"right": 210
+	}
+}
