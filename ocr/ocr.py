@@ -20,6 +20,7 @@ def torchify_tensors(tensors):
     for idx in range(len(tensors)):
         tensors[idx] = cv2.resize(tensors[idx], INPUT_DIMENSIONS)
         # img = torch.Tensor(img)
+    np.true_divide(tensors, 255)
     tensors = torch.Tensor(tensors)
     return tensors
 
