@@ -43,18 +43,19 @@ class CNN(nn.Module):
         return out
 
 if __name__ == '__main__':
-    num_epochs = 60
+    num_epochs = 200
     batch_size = 300
     learning_rate = 0.001
+    device = torch.device('cuda:0')
 
     #instance of the Conv Net
-    cnn = CNN()
+    cnn = CNN().to(device)
     #loss function and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(cnn.parameters(), lr=learning_rate)
 
     train_dataset, train_labels = get_data("./numbers")
-    train_dataset, train_labels = torch.Tensor(train_dataset), torch.Tensor(train_labels).long()
+    train_dataset, train_labels = torch.Tensor(train_dataset).to(device), torch.Tensor(train_labels).long().to(device)
     train_dataset = train_dataset.view(train_dataset.size(0), 1, train_dataset.size(1), train_dataset.size(2))
 
     dat_dim = train_dataset.size()
@@ -78,4 +79,4 @@ if __name__ == '__main__':
             optimizer.step()
         print("Average loss (epoch: " + str(epoch) + ")= " + str(sum(total_loss)/len(total_loss)))
 
-    torch.save(cnn, "./alphasmash_ocr.pth")
+    torch.save(cnn.state_dict(), "./alphasmash_ocr.pth")

@@ -1,4 +1,4 @@
-from ocr_train_pytorch import CNN
+from ocr.ocr_train_pytorch import CNN
 import torch
 import torchvision.transforms as transforms
 import cv2
@@ -7,7 +7,8 @@ import json
 with open('cropping.json') as f:
     HP_NUM_COORDS = json.load(f)
 
-ocr_model = torch.load("./alphasmash_ocr.pth")
+ocr_model = CNN()
+ocr_model.load_state_dict(torch.load("./ocr/alphasmash_ocr.pth"))
 
 INPUT_DIMENSIONS = (50, 50)
 HP_BOX_WIDTH = 15
@@ -21,11 +22,11 @@ def torchify_image(img_path):
     return(img)
 
 def torchify_tensors(tensors):
-    for tensor in tensors:
-        img = cv2.resize(tensor, INPUT_DIMENSIONS)
-        img = torch.Tensor(img)
-        img = img.view(1, 1, img.size(0), img.size(1))
-    return(tensors)
+    for idx in range(len(tensors)):
+        tensors[idx] = cv2.resize(tensors[idx], INPUT_DIMENSIONS)
+        # img = torch.Tensor(img)
+    tensors = torch.Tensor(tensors)
+    return tensors
 
 def get_health(frame):
     parent_health = HP_NUM_COORDS["hp"]
@@ -62,4 +63,7 @@ def get_health(frame):
     all_digits.append(enemy_digit_2)
     all_digits.append(enemy_digit_3)
 
-    return (ocr_model(torchify_tensors(all_digits)).max(1))
+    digit_tensors = torchify_tensors(all_digits).unsqueeze(1)
+    ret = ocr_model(digit_tensors).max(1)[1]
+    # print(ret)
+    return ret

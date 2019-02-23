@@ -6,6 +6,7 @@ from webcam.utils import *
 from ddqn.agent import *
 from config import *
 from player import Player
+from ocr.ocr import *
 
 # Cropping coords
 screen_top = HP_NUM_COORDS["screen"]["top"]
@@ -61,10 +62,12 @@ while True:
     cv2.imshow("Input", frame)
     history[:4] = history[-4:]
     history[-1] = frame
+
+    print(get_health(frame))
     
     # Get action
     action = agent.get_action(history[:4])
-    print(action)
+    # print(action)
 
     # Perform action
     combo_player.do(action)
